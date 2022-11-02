@@ -1,6 +1,6 @@
 ﻿namespace Unity.Pooling
 {
-    public interface IReleasable<T>
+    public interface IReleasable<in T>
     {
         void Release(T instance);
     }

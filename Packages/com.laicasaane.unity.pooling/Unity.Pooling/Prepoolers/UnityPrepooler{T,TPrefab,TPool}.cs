@@ -1,4 +1,5 @@
 ﻿using System.Pooling;
+using System.Pooling.Statistics;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace Unity.Pooling
         where TPrefab : IPrefab<T>
         where TPool : IReturnable<T>
     {
-        public async UniTask Prepool(
+        public readonly async UniTask Prepool(
               TPrefab prefab
             , TPool pool
             , Transform defaultParent

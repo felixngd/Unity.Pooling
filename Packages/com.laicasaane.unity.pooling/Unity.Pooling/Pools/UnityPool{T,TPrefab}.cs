@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Pooling;
+using System.Pooling.Statistics;
 using System.Threading;
 using System.Runtime.CompilerServices;
 using Cysharp.Threading.Tasks;
@@ -15,29 +16,32 @@ namespace Unity.Pooling
     {
         private readonly UniqueQueue<int, T> _queue;
 
-        [SerializeField]
-        private TPrefab _prefab;
+        [SerializeField] private TPrefab _prefab;
 
         public UnityPool()
         {
             _queue = new UniqueQueue<int, T>();
+            PoolTracker.TrackPoolCreation(this, 2);
         }
 
         public UnityPool(TPrefab prefab)
         {
             _queue = new UniqueQueue<int, T>();
             _prefab = prefab ?? throw new ArgumentNullException(nameof(prefab));
+            PoolTracker.TrackPoolCreation(this, 2);
         }
 
         public UnityPool(UniqueQueue<int, T> queue)
         {
             _queue = queue ?? throw new ArgumentNullException(nameof(queue));
+            PoolTracker.TrackPoolCreation(this, 2);
         }
 
         public UnityPool(UniqueQueue<int, T> queue, TPrefab prefab)
         {
             _queue = queue ?? throw new ArgumentNullException(nameof(queue));
             _prefab = prefab ?? throw new ArgumentNullException(nameof(prefab));
+            PoolTracker.TrackPoolCreation(this, 2);
         }
 
         public TPrefab Prefab
@@ -49,8 +53,7 @@ namespace Unity.Pooling
             set => _prefab = value;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Count() => _queue.Count;
+        public int Count => _queue.Count;
 
         public void Dispose()
         {
@@ -74,22 +77,34 @@ namespace Unity.Pooling
 
                 countRemove--;
             }
+            
+            PoolTracker.TrackPoolReturnOrRelease(this, countRemove);
         }
 
         public async UniTask<T> Rent()
         {
             if (_queue.TryDequeue(out var _, out var instance))
+            {
+                PoolTracker.TrackPoolRentOrCreate(this, instance);
                 return instance;
+            }
 
-            return await _prefab.Instantiate();
+            var newInstance = await _prefab.Instantiate();
+            PoolTracker.TrackPoolRentOrCreate(this, newInstance);
+            return newInstance;
         }
 
         public async UniTask<T> Rent(CancellationToken cancelToken)
         {
             if (_queue.TryDequeue(out var _, out var instance))
+            {
+                PoolTracker.TrackPoolRentOrCreate(this, instance);
                 return instance;
+            }
 
-            return await _prefab.Instantiate(cancelToken);
+            var newInstance = await _prefab.Instantiate(cancelToken);
+            PoolTracker.TrackPoolRentOrCreate(this, instance);
+            return newInstance;
         }
 
         public void Return(T instance)
@@ -99,6 +114,7 @@ namespace Unity.Pooling
 
             ReturnPreprocess(instance);
             _queue.TryEnqueue(instance.GetInstanceID(), instance);
+            PoolTracker.TrackPoolReturnOrRelease(this, 1);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

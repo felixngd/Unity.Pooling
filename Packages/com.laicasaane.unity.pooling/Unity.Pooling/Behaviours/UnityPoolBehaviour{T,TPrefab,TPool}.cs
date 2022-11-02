@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Pooling.Statistics;
+using System.Threading;
 using System.Runtime.CompilerServices;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -46,8 +47,11 @@ namespace Unity.Pooling
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async UniTask Prepool(CancellationToken cancelToken)
-            => await _prepooler.Prepool(Pool.Prefab, Pool, this.transform, cancelToken);
-
+        {
+            await _prepooler.Prepool(Pool.Prefab, Pool, this.transform, cancelToken);
+            PoolTracker.TrackPoolRentOrCreate(this, Pool.Prefab.PrepoolAmount);
+        }
+        
         protected virtual void OnAwake() { }
 
         protected async UniTask OnStart()

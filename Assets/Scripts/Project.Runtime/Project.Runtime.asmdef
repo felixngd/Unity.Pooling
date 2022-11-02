@@ -13,7 +13,8 @@
         "Unity.Addressables",
         "Unity.ResourceManager",
         "Unity.Pooling",
-        "Unity.Pooling.Addressables"
+        "Unity.Pooling.Addressables",
+        "System.Collections.Generic.Pooling"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

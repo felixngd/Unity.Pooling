@@ -20,9 +20,7 @@ namespace Unity.Pooling
             get => _pool;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Count()
-            => _pool.Count();
+        public int Count => _pool.Count;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReleaseInstances(int keep, Action<T> onReleased = null)

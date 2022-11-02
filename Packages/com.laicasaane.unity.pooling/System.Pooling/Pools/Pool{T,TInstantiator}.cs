@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Pooling.Statistics;
+using System.Runtime.CompilerServices;
 
 namespace System.Pooling
 {
@@ -12,27 +13,32 @@ namespace System.Pooling
         public Pool()
             : this(new UniqueQueue<T>())
         {
+            PoolTracker.TrackPoolCreation(this, 2);
         }
 
         public Pool(UniqueQueue<T> queue)
         {
             _instantiator = new ActivatorInstantiator<TInstantiator>().Instantiate();
             _queue = queue ?? throw new ArgumentNullException(nameof(queue));
+            
+            PoolTracker.TrackPoolCreation(this, 2);
         }
 
         public Pool(TInstantiator instantiator)
             : this(instantiator, new UniqueQueue<T>())
         {
+            PoolTracker.TrackPoolCreation(this, 2);
         }
 
         public Pool(TInstantiator instantiator, UniqueQueue<T> queue)
         {
             _instantiator = instantiator ?? throw new ArgumentNullException(nameof(instantiator));
             _queue = queue ?? throw new ArgumentNullException(nameof(queue));
+            
+            PoolTracker.TrackPoolCreation(this, 2);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Count() => _queue.Count;
+        public int Count => _queue.Count;
 
         public void Dispose()
         {
@@ -51,14 +57,21 @@ namespace System.Pooling
 
                 countRemove--;
             }
+            
+            PoolTracker.TrackPoolReturnOrRelease(this, countRemove);
         }
 
         public T Rent()
         {
             if (_queue.TryDequeue(out var instance))
+            {
+                PoolTracker.TrackPoolRentOrCreate(this, instance);
                 return instance;
+            }
 
-            return _instantiator.Instantiate();
+            var newInstance = _instantiator.Instantiate();
+            PoolTracker.TrackPoolRentOrCreate(this, instance);
+            return newInstance;
         }
 
         public void Return(T instance)
@@ -68,9 +81,12 @@ namespace System.Pooling
 
             ReturnPreprocess(instance);
             _queue.TryEnqueue(instance);
+            PoolTracker.TrackPoolReturnOrRelease(this, 1);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected virtual void ReturnPreprocess(T instance) { }
     }
 }
+
+

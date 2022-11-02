@@ -10,11 +10,9 @@ namespace Unity.Pooling.Scriptables
         : ScriptableObject, IUnityPool<T, UnityObjectPrefab>, IPrepoolable, IHasParent
         where T : UnityEngine.Object
     {
-        [SerializeField]
-        private UnityObjectPrefab _prefab;
+        [SerializeField] private UnityObjectPrefab _prefab;
 
-        [SerializeField]
-        private bool _prepoolOnStart = false;
+        [SerializeField] private bool _prepoolOnStart = false;
 
         private readonly UnityObjectPool _pool = new UnityObjectPool();
         private readonly UnityObjectPrepooler _prepooler = default;
@@ -46,9 +44,8 @@ namespace Unity.Pooling.Scriptables
             set => _prefab.Parent = value ?? throw new ArgumentNullException(nameof(value));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Count()
-            => _pool.Count();
+
+        public int Count => _pool.Count;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Return(T instance)

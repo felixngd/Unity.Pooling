@@ -19,7 +19,7 @@ namespace Pooling.Sample
             pool.Prefab = new AddressGameObjectPrefab {
                 Source = K_CHARACTER02_KEY,
                 Parent = transform,
-                PrepoolAmount = 100
+                PrePoolAmount = 100
             };
             pool.Prepool().Forget();
         }

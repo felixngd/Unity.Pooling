@@ -1,4 +1,3 @@
-using System;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using ZBase.Collections.Pooled.Generic;
@@ -11,9 +10,8 @@ namespace Pooling.Sample
     public class AddressableGameObjectPoolSample1 : MonoBehaviour
     {
         private const string K_CHARACTER01_KEY = "Character_AddressPool_P01";
-
-        private Grid _grid = new Grid(20, 15, true);
-        private List<GameObject> _spawned = new List<GameObject>();
+        private Grid _grid = new(20, 15, true);
+        private List<GameObject> _spawned = new();
         private void Start()
         {
             var pool = SharedPool.Of<AddressGameObjectPool>();
@@ -23,35 +21,6 @@ namespace Pooling.Sample
             };
         }
 
-        private async void OnGUI()
-        {
-            if (GUI.Button(new Rect(10, 10, 150, 50), "Spawn"))
-            {
-                for (int i = 0; i < 100; i++)
-                {
-                    Spawn().Forget();
-                }
-                Debug.Log("Spawn 100 item from the AddressableGameObject pool");
-            }
-            
-            if (GUI.Button(new Rect(10, 70, 150, 50), "Spawn Disposable Item"))
-            {
-                await SpawnDisposableItems();
-                Debug.Log("Item automatically returned to pool when context is disposed");
-            }
-            
-            if (GUI.Button(new Rect(10, 130, 150, 50), "Return"))
-            {
-                Return();
-                Debug.Log("Return all item to the pool");
-            }
-            
-            if (GUI.Button(new Rect(10, 190, 150, 50), "Release All"))
-            {
-                ReleaseAll();
-                Debug.Log("Release all item from the pool");
-            }
-        }
         
         private async UniTask Spawn()
         {
@@ -90,9 +59,37 @@ namespace Pooling.Sample
             _spawned.Clear();
         }
         
-        private void OnDisable()
+        private void OnDisable()=> ReleaseAll();
+        
+        
+        private async void OnGUI()
         {
-            ReleaseAll();
+            if (GUI.Button(new Rect(10, 10, 150, 50), "Spawn"))
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    Spawn().Forget();
+                }
+                Debug.Log("Spawn 100 item from the AddressableGameObject pool");
+            }
+            
+            if (GUI.Button(new Rect(10, 70, 150, 50), "Spawn Disposable Item"))
+            {
+                await SpawnDisposableItems();
+                Debug.Log("Item automatically returned to pool when context is disposed");
+            }
+            
+            if (GUI.Button(new Rect(10, 130, 150, 50), "Return"))
+            {
+                Return();
+                Debug.Log("Return all item to the pool");
+            }
+            
+            if (GUI.Button(new Rect(10, 190, 150, 50), "Release All"))
+            {
+                ReleaseAll();
+                Debug.Log("Release all item from the pool");
+            }
         }
     }
 }

@@ -86,7 +86,7 @@ namespace Sample.Environment
                 this._slots[this._slots.IndexOf(slot)] = newSlot;
                 return;
             }
-            throw new Exception("No available slot");
+            Debug .LogError($"Slot at position {position} not found");
         }
     }
 }

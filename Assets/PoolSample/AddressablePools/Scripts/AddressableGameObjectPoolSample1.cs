@@ -9,23 +9,14 @@ namespace Pooling.Sample
 {
     public class AddressableGameObjectPoolSample1 : MonoBehaviour
     {
-        private const string K_CHARACTER01_KEY = "Character_AddressPool_P01";
-        private Grid _grid = new(20, 15, true);
-        private List<GameObject> _spawned = new();
-        private void Start()
-        {
-            var pool = SharedPool.Of<AddressGameObjectPool>();
-            pool.Prefab = new AddressGameObjectPrefab {
-                Source = K_CHARACTER01_KEY,
-                Parent = transform
-            };
-        }
-
+        [SerializeField]private AssetRefGameObjectPrefab _prefab;
+        private readonly Grid _grid = new(20, 15, true);
+        private readonly List<GameObject> _spawned = new();
         
         private async UniTask Spawn()
         {
-            var pool = SharedPool.Of<AddressGameObjectPool>();
-            var go = await pool.Rent();
+            var pool = SharedPool.Of<GlobalAssetRefGameObjectPool>();
+            var go = await pool.Rent(_prefab);
             go.transform.position = _grid.GetAvailableSlot().position;
             go.SetActive(true);
             _spawned.Add(go);
@@ -33,12 +24,17 @@ namespace Pooling.Sample
 
         private void Return()
         {
-            var pool = SharedPool.Of<AddressGameObjectPool>();
+            var pool = SharedPool.Of<GlobalAssetRefGameObjectPool>();
             foreach (var go in _spawned)
-            {
                 pool.Return(go);
-                this._grid.FreeSlot(go.transform.position);
-            }
+            FreeSlot();
+            _spawned.Clear();
+        }
+
+        private void FreeSlot()
+        {
+            foreach (var go in _spawned)
+                _grid.FreeSlot(go.transform.position);
         }
         
         private async UniTask SpawnDisposableItems()

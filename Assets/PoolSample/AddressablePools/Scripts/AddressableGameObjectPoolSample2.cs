@@ -12,7 +12,7 @@ namespace Pooling.Sample
         private const string K_CHARACTER02_KEY = "Character_AddressPool_P02";
 
         private Grid _grid = new Grid(20, 15, true);
-        private List<GameObject> _spawned = new List<GameObject>();
+        private List<GameObject> _spawned = new ();
         private void Start()
         {
             var pool = SharedPool.Of<CustomAddressGameObjectPool>();

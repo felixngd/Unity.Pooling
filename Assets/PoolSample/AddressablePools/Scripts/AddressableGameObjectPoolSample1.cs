@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using ZBase.Collections.Pooled.Generic;
 using ZBase.Foundation.Pooling;
 using ZBase.Foundation.Pooling.AddressableAssets;
@@ -9,6 +10,7 @@ namespace Pooling.Sample
 {
     public class AddressableGameObjectPoolSample1 : MonoBehaviour
     {
+        [SerializeField] private AssetReference _sceneRef;
         [SerializeField] private AssetRefGameObjectPrefab _prefab;
         [SerializeField] private float _spawnRadius = 20f;
         [SerializeField] private int _spawnCount = 20;
@@ -41,17 +43,19 @@ namespace Pooling.Sample
             _spawned.Clear();
         }
 
-        private void OnDisable() => ReleaseAll();
-
         private void OnGUI()
         {
             if (GUI.Button(new Rect(10, 10, 150, 50), "Spawn"))
                 for (int i = 0; i < _spawnCount; i++)
                     Spawn().Forget();
-            if (GUI.Button(new Rect(10, 130, 150, 50), "Return"))
+            if (GUI.Button(new Rect(10, 70, 150, 50), "Return"))
                 Return();
-            if (GUI.Button(new Rect(10, 190, 150, 50), "Release All"))
+            if (GUI.Button(new Rect(10, 130, 150, 50), "Release All"))
                 ReleaseAll();
+            if (GUI.Button(new Rect(10, 190, 150, 50), "SwitchScene"))
+            {
+                Addressables.LoadSceneAsync(_sceneRef);
+            }
         }
     }
 }

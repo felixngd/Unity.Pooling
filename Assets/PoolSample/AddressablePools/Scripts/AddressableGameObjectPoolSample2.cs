@@ -56,7 +56,7 @@ namespace Pooling.Sample
         
         private async UniTask Spawn()
         {
-            var pool = SharedPool.Of<AddressGameObjectPool>();
+            var pool = SharedPool.Of<CustomAddressGameObjectPool>();
             var go = await pool.Rent();
             go.transform.position = _grid.GetAvailableSlot().position;
             go.SetActive(true);
@@ -65,7 +65,7 @@ namespace Pooling.Sample
 
         private void Return()
         {
-            var pool = SharedPool.Of<AddressGameObjectPool>();
+            var pool = SharedPool.Of<CustomAddressGameObjectPool>();
             foreach (var go in _spawned)
             {
                 pool.Return(go);
@@ -75,7 +75,7 @@ namespace Pooling.Sample
         
         private async UniTask SpawnDisposableItems()
         {
-            var pool = SharedPool.Of<AddressGameObjectPool>();
+            var pool = SharedPool.Of<CustomAddressGameObjectPool>();
             var context = pool.DisposableContext();
             using var go = await context.Rent();
             go.Instance.transform.position = _grid.GetAvailableSlot().position;
@@ -86,7 +86,7 @@ namespace Pooling.Sample
         
         private void ReleaseAll()
         {
-            var pool = SharedPool.Of<AddressGameObjectPool>();
+            var pool = SharedPool.Of<CustomAddressGameObjectPool>();
             pool.ReleaseInstances(0);
             _spawned.Clear();
         }

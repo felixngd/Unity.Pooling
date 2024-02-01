@@ -230,12 +230,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _prefab:
     _source:
-      m_AssetGUID: 1c14710c0d49c480497e5be810eb4fc4
+      m_AssetGUID: d313163ceba02498b974cf73b0605e8a
       m_SubObjectName: 
       m_SubObjectType: 
       m_EditorAssetChanged: 0
     _parent: {fileID: 0}
     _prePoolAmount: 0
+  _spawnRadius: 20
+  _spawnCount: 100
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

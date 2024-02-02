@@ -13,7 +13,7 @@ namespace Pooling.Sample
 
         private Grid _grid = new Grid(20, 15, true);
         private List<GameObject> _spawned = new ();
-        private void Start()
+        private async UniTask OnStart()
         {
             var pool = SharedPool.Of<CustomAddressGameObjectPool>();
             pool.Prefab = new AddressGameObjectPrefab {
@@ -21,13 +21,14 @@ namespace Pooling.Sample
                 Parent = transform,
                 PrePoolAmount = 100
             };
-            pool.Prepool().Forget();
+            await pool.Prepool();
         }
 
         private async void OnGUI()
         {
             if (GUI.Button(new Rect(10, 10, 150, 50), "Spawn"))
             {
+                await OnStart();
                 for (int i = 0; i < 100; i++)
                 {
                     Spawn().Forget();

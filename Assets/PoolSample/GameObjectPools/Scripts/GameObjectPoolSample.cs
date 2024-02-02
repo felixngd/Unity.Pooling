@@ -1,93 +1,56 @@
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using ZBase.Collections.Pooled.Generic;
-using ZBase.Foundation.Pooling;
+using ZBase.Foundation.Pooling.GameObject.LazyPool.Extensions;
 using ZBase.Foundation.Pooling.UnityPools;
-using Grid = Sample.Environment.Grid;
 
 namespace Pooling.Sample
 {
     public class GameObjectPoolSample : MonoBehaviour
     {
-        public Transform poolParent1;
-        public Transform poolParent2;
-        public GameObject prefab1;
+        public GameObjectPrefab prefab1;
         public GameObject prefab2;
-
-        //you can access the spawned objects in your own list
-        public List<GameObject> myGameObjects = new();
-
-        //Manage lifetime of the pool yourself (in this case, the pool4 will not be registered in the SharedPool)
-        public GameObjectPool pool4;
-        public List<GameObject> pool4Objects = new();
-
-        private readonly Grid _grid = new(20, 15, true);
-
-        private void Start()
+        
+        private async UniTask Spawn()
         {
-            var pool2 = SharedPool.Of<CustomGameObjectPool>();
-            pool2.Prefab = new GameObjectPrefab { Parent = poolParent1, PrePoolAmount = 10, Source = this.prefab1 };
-            pool2.PrePool();
-            pool4 = new GameObjectPool(new GameObjectPrefab {
-                Parent = poolParent2, PrePoolAmount = 100, Source = this.prefab2
-            });
-        }
+            var item = await LazyGameObjectPool.Rent(prefab1);
+            item.SetActive(true);
+            var pos = Random.insideUnitCircle * _spawnRadius;
+            item.transform.position = new Vector3 {x = pos.x, y = 0, z = pos.y};
+            _spawned.Add(item);
+        } 
+        
+        private async UniTask SpawnByPrefab()
+        {
+            var item = await LazyGameObjectPool.Rent(prefab2);
+            item.SetActive(true);
+            var pos = Random.insideUnitCircle * _spawnRadius;
+            item.transform.position = new Vector3 {x = pos.x, y = 0, z = pos.y};
+            _spawned.Add(item);
+        } 
 
-        private async void OnGUI()
+
+        private  void OnGUI()
         {
             //manually get the CustomGameObjectPool then rent and spawn some objects
-            if (GUI.Button(new Rect(0, 0, 300, 50), "Spawn in Shared Pool"))
-            {
-                var pool = SharedPool.Of<CustomGameObjectPool>();
-                for (int i = 0; i < 50; i++)
-                {
-                    var go = await pool.Rent();
-                    go.transform.position = this._grid.GetAvailableSlot().position;
-                    go.SetActive(true);
-                    this.myGameObjects.Add(go);
-                }
-            }
-
-            //manually get the CustomGameObjectPool then return and despawn some objects
-            if (GUI.Button(new Rect(0, 100, 300, 50), "Despawn in SharedPool"))
-            {
-                var pool = SharedPool.Of<CustomGameObjectPool>();
-                for (int i = myGameObjects.Count - 1; i >= 0; i++)
-                {
-                    var go = this.myGameObjects[i];
-                    pool.Return(go);
-                    this._grid.FreeSlot(go.transform.position);
-                }
-            }
-
-            if (GUI.Button(new Rect(0, 200, 150, 50), "Spawn in Pool 4"))
-            {
-                for (int i = 0; i < 100; i++)
-                {
-                    if (!this._grid.TryGetAvailableSlot(out var slot))
-                        continue;
-                    var go = await this.pool4.Rent();
-                    go.transform.position = slot.position;
-                    go.SetActive(true);
-                    this.pool4Objects.Add(go);
-                }
-            }
-
-            if (!GUI.Button(new Rect(0, 300, 150, 50), "Despawn in Pool 4"))
+            if (GUI.Button(new Rect(0, 0, 150, 50), "Spawn"))
+                for (int i = 0; i < _spawnCount; i++)
+                    Spawn().Forget();    
+            if (GUI.Button(new Rect(0, 60, 150, 50), "Spawn By Prefab"))
+                for (int i = 0; i < this._spawnCount; i++)
+                    SpawnByPrefab().Forget();
+            if (!GUI.Button(new Rect(0, 120, 150, 50), "DeSpawn All"))
                 return;
-
-            //return random 50 times in pool4, may some objects will be returned multiple times
-            for (int i = 0; i < 50; i++)
+            foreach (var go in _spawned)
             {
-                var index = Random.Range(0, this.pool4Objects.Count);
-                if (this.pool4Objects.Count <= index)
-                    continue;
-                var go = this.pool4Objects[index];
-                this.pool4.Return(go);
-                this._grid.FreeSlot(go.transform.position);
-                this.pool4Objects.RemoveAt(index);
+                go.SetActive(false);
+                LazyGameObjectPool.Return(go);
             }
+            _spawned.Clear();
         }
-
-        private void OnDestroy() => this.pool4.Dispose();
+        
+        [SerializeField] private float _spawnRadius = 20f;
+        [SerializeField] private int _spawnCount = 20;
+        private readonly List<GameObject> _spawned = new();
     }
 }

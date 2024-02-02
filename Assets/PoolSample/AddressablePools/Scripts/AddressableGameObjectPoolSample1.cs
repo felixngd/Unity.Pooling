@@ -22,6 +22,7 @@ namespace Pooling.Sample
             _item.transform.position = new Vector3 {x = pos.x, y = 0, z = pos.y};
             _spawned.Add(_item);
         } 
+        
         private async UniTask SpawnByRef()
         {
             _item = await LazyAssetRefGameObjectPool.Rent(_assetReferenceGameObject);

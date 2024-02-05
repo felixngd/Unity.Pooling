@@ -10,20 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Default Local Group
+  m_Name: G2
   m_EditorClassIdentifier: 
-  m_GroupName: Default Local Group
+  m_GroupName: G2
   m_Data:
     m_SerializedData: []
-  m_GUID: d9910c93167875b4c99382800fc0d05e
+  m_GUID: 0c843a54c48305444b92c07cee920462
   m_SerializeEntries:
-  - m_GUID: d313163ceba02498b974cf73b0605e8a
-    m_Address: Character_P01
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d0d1d00d6013742259b0519a178bae7e
-    m_Address: AddressGameObjectPool_2
+  - m_GUID: 5fa68afe6708644fda728daf092224b3
+    m_Address: Character_AddressPool_P02
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -31,5 +26,5 @@ MonoBehaviour:
   m_Settings: {fileID: 11400000, guid: e0f6fa325fd1a464cbecb4e3b9f30872, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 7bdf3fac82cbf604f9d3f35fc61a9d5b, type: 2}
-    - {fileID: 11400000, guid: 1a2a2c93eab7b43418971a8e619998b7, type: 2}
+    - {fileID: 11400000, guid: b6abdbd3cc0a62c4e8bb71d6d16e7306, type: 2}
+    - {fileID: 11400000, guid: 28bddb69006143b4f8d9adeff7301fa6, type: 2}

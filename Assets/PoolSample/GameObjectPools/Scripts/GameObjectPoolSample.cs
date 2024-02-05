@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using ZBase.Collections.Pooled.Generic;
-using ZBase.Foundation.Pooling.GameObject.LazyPool.Extensions;
+using ZBase.Foundation.Pooling.GameObjectItem.LazyPool.Extensions;
 using ZBase.Foundation.Pooling.UnityPools;
 
 namespace Pooling.Sample
@@ -10,6 +10,7 @@ namespace Pooling.Sample
     {
         public GameObjectPrefab prefab1;
         public GameObject prefab2;
+        public int sceneID;
         
         private async UniTask Spawn()
         {
@@ -39,14 +40,18 @@ namespace Pooling.Sample
             if (GUI.Button(new Rect(0, 60, 150, 50), "Spawn By Prefab"))
                 for (int i = 0; i < this._spawnCount; i++)
                     SpawnByPrefab().Forget();
-            if (!GUI.Button(new Rect(0, 120, 150, 50), "DeSpawn All"))
-                return;
-            foreach (var go in _spawned)
+            if (GUI.Button(new Rect(0, 120, 150, 50), "DeSpawn All"))
             {
-                go.SetActive(false);
-                LazyGameObjectPool.Return(go);
+                foreach (var go in _spawned)
+                {
+                    go.SetActive(false);
+                    LazyGameObjectPool.Return(go);
+                }
+                _spawned.Clear();
             }
-            _spawned.Clear();
+            if (!GUI.Button(new Rect(0, 180, 150, 50), "Switch Scene"))
+                return;
+            UnityEngine.SceneManagement.SceneManager.LoadScene(sceneID);
         }
         
         [SerializeField] private float _spawnRadius = 20f;

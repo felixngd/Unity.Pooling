@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using ZBase.Collections.Pooled.Generic;
 using ZBase.Foundation.Pooling.AddressableAssets;
-using ZBase.Foundation.Pooling.GameObject.LazyPool.Extensions;
+using ZBase.Foundation.Pooling.GameObjectItem.LazyPool.Extensions;
 
 namespace Pooling.Sample
 {
@@ -11,7 +11,7 @@ namespace Pooling.Sample
     {
         [SerializeField] private AssetRefGameObjectPrefab _prefab;
         [SerializeField] private AssetReferenceGameObject _assetReferenceGameObject;
-        
+
         private GameObject _item;
 
         private async UniTask Spawn()
@@ -61,10 +61,11 @@ namespace Pooling.Sample
                 Return();
             if (GUI.Button(new Rect(10, 130, 150, 50), "Release All"))
                 ReleaseAll();
-            if (!GUI.Button(new Rect(10, 190, 150, 50), "Load By AssetRef"))
-                return;
-            for (int i = 0; i < this._spawnCount; i++)
-                SpawnByRef().Forget();
+            if (GUI.Button(new Rect(10, 190, 150, 50), "Load By AssetRef"))
+                for (int i = 0; i < this._spawnCount; i++)
+                    SpawnByRef().Forget();
+            if (GUI.Button(new Rect(10, 250, 150, 50), "Switch Scene"))
+                Addressables.LoadSceneAsync(_sceneRef);
         }
         [SerializeField] private AssetReference _sceneRef;
         [SerializeField] private float _spawnRadius = 20f;

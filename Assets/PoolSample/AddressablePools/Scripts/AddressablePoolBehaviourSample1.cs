@@ -25,7 +25,7 @@ namespace Pooling.Sample
 
         private readonly List<BoxCollider> _units = new();
 
-        private async void Start() => await this.pool.Prepool(destroyCancellationToken);
+        private async void Start() => await this.pool.Prepool(this.GetCancellationTokenOnDestroy()).SuppressCancellationThrow();
 
         // ReSharper disable Unity.PerformanceAnalysis
         private async UniTask Rent(CancellationToken cancelToken = default)
